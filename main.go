@@ -1,8 +1,8 @@
 package main
 
-import(
+import "fmt"
 
-)
-
-func main()  {
+func main() {
+	defer fmt.Println("Bye")
+	fmt.Println("Hi")
 }
