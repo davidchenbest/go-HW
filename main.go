@@ -22,4 +22,20 @@ func main() {
 	}
 	// fmt.Println(person.Name)
 	fmt.Println(person["name"])
+	toJSON()
+}
+
+func toJSON() {
+	// person := Person{
+	// 	Name: "Alice",
+	// 	Age:  30,
+	// }
+	person := map[string]any{"name": "Alice", "age": 30}
+	jsonData, err := json.Marshal(person)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println(string(jsonData))
 }
