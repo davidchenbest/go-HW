@@ -28,6 +28,8 @@ func main() {
 	ping(pings, "passed message")
 	pong(pings, pongs)
 	fmt.Println(<-pongs)
+
+	example()
 }
 
 func worker(done chan bool) {
@@ -45,4 +47,20 @@ func ping(pings chan<- string, msg string) {
 func pong(pings <-chan string, pongs chan<- string) {
 	msg := <-pings
 	pongs <- msg
+}
+
+func example() {
+	channel := make(chan int)
+
+	go func() {
+		for i := 0; i < 10; i++ {
+			time.Sleep(time.Second)
+			channel <- i
+		}
+		close(channel)
+	}()
+
+	for msg := range channel {
+		fmt.Println(msg)
+	}
 }
