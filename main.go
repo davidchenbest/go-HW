@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -62,5 +63,46 @@ func example() {
 
 	for msg := range channel {
 		fmt.Println(msg)
+	}
+}
+
+func processByBatch() {
+	c := make(chan int, 2)
+	i := 0
+	for {
+
+		go func() {
+			time.Sleep(time.Second)
+			x := <-c
+			println(x)
+		}()
+		fmt.Println("send ", i)
+		c <- i
+		i++
+	}
+}
+
+func batchDoesntWork() {
+	c := make(chan int)
+	j := 0
+
+	wg := sync.WaitGroup{}
+	go func() {
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(num *int) {
+				defer wg.Done()
+				fmt.Println("send ", *num)
+				time.Sleep(time.Second)
+				c <- *num
+				*num++
+			}(&j)
+		}
+		wg.Wait()
+		close(c)
+	}()
+
+	for x := range c {
+		fmt.Println(x)
 	}
 }
