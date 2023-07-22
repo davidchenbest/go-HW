@@ -106,3 +106,42 @@ func batchDoesntWork() {
 		fmt.Println(x)
 	}
 }
+
+func waitGroupWithoutBufferChannel() {
+	wg := sync.WaitGroup{}
+	ch := make(chan int)
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			time.Sleep(time.Second / 4)
+			ch <- i
+			wg.Done()
+		}(i)
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	for c := range ch {
+		fmt.Println(c)
+	}
+
+}
+
+func sendBlocking() {
+	ch := make(chan int)
+
+	go func() {
+		time.Sleep(time.Second / 2)
+		fmt.Println(<-ch)
+	}()
+	go func() {
+		time.Sleep(time.Second / 2)
+		fmt.Println(<-ch)
+
+	}()
+	ch <- 1
+
+	time.Sleep(time.Second * 3)
+}
